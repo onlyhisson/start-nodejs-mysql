@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%
+        let flashMsg = {
+            type: '',
+            text: ''
+        };
+        if(messages.error) {
+            flashMsg.type = 'error';
+            flashMsg.text = messages.error;
+        };
+        if(messages.info) {
+            flashMsg.type = 'info';
+            flashMsg.text = messages.info;
+        };
+        if(messages.success) {
+            flashMsg.type = 'success';
+            flashMsg.text = messages.success;
+        };
+    %>
+    <input id="showToastr" type="hidden" onClick='showToastr("<%=flashMsg.type%>", "<%=flashMsg.text%>")'>
+<!-- Wrapper-->
+<div class="wrapper">
+
+    <!-- Main content-->
+    <section class="content" style="margin-top: 15px; margin-left: 0;">
+        <% if(pageTitle != 'Home') { %>
+        <div class="back-link">
+            <a href="<%=routes.home%>" class="btn btn-success">Home</a>
+        </div>
+        <% } %>
+        <%- body %>
+    </section>
+    <!-- End main content-->
+
+</div>
+<!-- End wrapper-->
+
+<%- include('../partials/scripts-main') %>
+
+</body>
+
+</html>

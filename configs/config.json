@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "nodejs",
+    "password": "node!!@@js",
+    "database": "nodejs",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "nodejs",
+    "password": "node!!@@js",
+    "database": "nodejs",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "nodejs",
+    "password": "node!!@@js",
+    "database": "nodejs",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  }
+}
