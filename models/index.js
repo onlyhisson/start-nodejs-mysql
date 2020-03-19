@@ -27,7 +27,6 @@ db.Post.belongsTo(db.User); // hasMany 반대, N:1 관계
 db.Post.belongsToMany(db.Hashtag, { through: 'PostHashtag' });
 db.Hashtag.belongsToMany(db.Post, { through: 'PostHashtag' });
 
-
 db.User.belongsToMany(db.User, {
   foreignKey: 'followingId',  // 외래키
   as: 'Followers',            // 새로운 모델(Followers)이 생성

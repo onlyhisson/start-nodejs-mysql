@@ -1,5 +1,5 @@
 import routes from "../routes";
-import Posts from "../models/post";
+import { User, Post } from "../models";
 import moment from "moment";
 import { errorHandler } from "../public/js/common";
 import { saveImageLocal, deleteFileLocal } from './../public/js/common';
@@ -8,8 +8,11 @@ const IMG_INFO = { path: '/images/post', elName: 'postImage' };
 
 export const posts = async (req, res) => {
     try {
-      const posts = await Posts.find({}).where('writerId').equals(req.user.id).sort({createdAt: -1});
-      //const posts = await Posts.find({}).sort({ _id: -1 }); // 모든 게시물 조회
+      const posts = await Post.findAll({
+        where: {
+          userId: req.user.id
+        }
+      });
 
       res.render("posts/index", { 
         pageTitle: "Posts", 
@@ -47,8 +50,8 @@ export const postWritePost = async (req, res) => {
     if(result.data.fileName)
       imgUrl = result.data.savePath+'/'+result.data.fileName
 
-    await Posts.create({
-      writerId: req.user.id,
+    await Post.create({
+      userId: req.user.id,
       title,
       subTitle,
       postContent,
@@ -68,7 +71,7 @@ export const postWritePost = async (req, res) => {
 export const postDetail = async (req, res) => {
   const { params: { id } } = req;
   try {
-    const postOne = await Posts.findById(id);
+    const postOne = await Post.findOne({ where: { id: id } });
     res.render("posts/postDetail", { 
       pageTitle: "Posts", 
       subTitle: "Post Detail", 
@@ -87,7 +90,7 @@ export const editPost = async (req, res) => {
   try {
     const result = await saveImageLocal(req, res, IMG_INFO);
     const { body: { postId, title, subTitle, postContent }, file } = req;
-    const postOne = await Posts.findById(postId); // 게시글 수정 전 파일 경로, 생성일자 get
+    const postOne = await Post.findById(postId); // 게시글 수정 전 파일 경로, 생성일자 get
     let imgUrl = postOne.fileUrl || '';
 
     if(result.status == 'ERROR') throw {data: result.data}  // 에러 처리
@@ -99,7 +102,7 @@ export const editPost = async (req, res) => {
     } else if(!imgUrl && file) {  // 게시글 사진 변경시
       imgUrl = `${result.data.savePath}/${result.data.fileName}`;
     }
-    await Posts.findByIdAndUpdate(postId, {
+    await Post.findByIdAndUpdate(postId, {
       title,
       subTitle,
       postContent,
@@ -123,11 +126,11 @@ export const deletePost = async (req, res) => {
     params: { id }
   } = req;
   try {
-    const postOne = await Posts.findById(id);
+    const postOne = await Post.findById(id);
     if (String(postOne.writerId) !== req.user.id) {
       throw {};
     } else {
-      await Posts.findOneAndRemove({ _id: id });
+      await Post.findOneAndRemove({ _id: id });
     }
 
     if(postOne.fileUrl) {

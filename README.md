@@ -12,6 +12,15 @@ Version Info
 
 *Pm2      v3.5.1*
 
+### DB 데이터베이스 & 사용자 추가
+
+CREATE DATABASE [데이터베이스명] default CHARACTER SET UTF8;
+
+CREATE USER '[사용자명]'@'localhost' IDENTIFIED BY '[비밀번호]';
+
+GRANT ALL PRIVILEGES ON *.* TO '[사용자명]'@'localhost';
+
+FLUSH PRIVILEGES;
 
 ### 소스복사
 $ cd 상위경로

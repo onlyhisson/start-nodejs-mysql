@@ -5,11 +5,19 @@
 
 module.exports = (sequelize, DataTypes) => {
     const Post = sequelize.define('post', {
-        content: {  // 게시글 내용
-            type: DataTypes.STRING(140),
+        title: {  // 게시글 제목
+            type: DataTypes.STRING(50),
             allowNull: false,
         },
-        img: {      // 게시글 이미지 경로
+        subTitle: {  // 게시글 제목
+            type: DataTypes.STRING(50),
+            allowNull: true,
+        },
+        postContent: {  // 게시글 내용
+            type: DataTypes.STRING(2000),
+            allowNull: false,
+        },
+        fileUrl: {      // 게시글 이미지 경로
             type: DataTypes.STRING(200),
             allowNull: true,
         },
