@@ -56,8 +56,8 @@ app.use(
   );
 app.use(flash()); // 내부적으로 session을 사용하기 때문에 session 아래에 미들웨어 사용
 
-app.use(passport.initialize()); // passport 초기화
-app.use(passport.session());    // 로그인을 지속시키기 위해 세션 사용
+app.use(passport.initialize()); // passport 초기화, 설정 setting
+app.use(passport.session());    // 로그인을 지속시키기 위해 세션 사용, req.session 객체에 passport 정보 저장
 
 app.use(localsMiddleware);
 app.use(routes.home, globalRouter);
@@ -66,16 +66,21 @@ app.use(routes.posts, postsRouter);
 app.use(routes.api, apiRouter);
 
 app.use((req, res, next) => {
-  const err = new Error('Not Found');
+  const err = new Error('Page Not Found');
   err.status = 404;
   next(err);
 });
 
 app.use((err, req, res, next) => {
+  const status = err.status || 500;
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.render('error')
+  res.locals.status = status;
+  res.status(status);
+  res.render('error', {
+    pageTitle: "Error Page",
+    layout: 'layouts/main-public',
+  })
 });
 
 export default app;
