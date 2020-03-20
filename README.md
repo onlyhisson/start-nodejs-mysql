@@ -8,7 +8,7 @@ Version Info
 
 *Node JS  v12.12.0*
 
-*Mongo    v4.0.16*
+*Mysql    v14.14 Distrib 5.7.29*
 
 *Pm2      v3.5.1*
 
@@ -31,11 +31,11 @@ or
 
 cd 상위경로
 
-$ git clone https://github.com/onlyhisson/start-nodejs-mongo.git
+$ git clone https://github.com/onlyhisson/start-nodejs-mysql.git
 
 
 ### 환경 설정 파일 
-$ cd 상위경로/start-nodejs-mongo
+$ cd 상위경로/start-nodejs-mysql
 
 $ vi .env
 
@@ -43,12 +43,18 @@ $ vi .env
 
 ```
 # Global
-NODE_ENV="development"
-COOKIE_SECRET="CookieSecret"
-PORT="3100"
+NODE_ENV=development
+DEBUG=restapi:server
+COOKIE_SECRET=nodejsmysqlsecret
+PORT=3000
 
-# MongoDB Config Setting
-MONGO_URL="mongodb://호스트명:포트번호/DB명"
+# MySQL
+DB_USER=사용자명
+DB_PW=비밀번호
+DB_HOST=127.0.0.1
+DB_NAME=데이터베이스명
+DB_DEV=개발데이터베이스명
+DB_TEST=테스트데이터베이스명
 ```
 
 ### Node Module install
@@ -57,15 +63,9 @@ $ npm install
 ### 프로그램 실행
 $ npm run-script start
 
-or
-
-$ pm2 start --interpreter babel-node init.js --name startNode
-
-
 ### 브라우저 
-http://아이피:3100
+http://아이피:3000
 
 
-## 소스 설명
-![Alt text](/public/images/project/src_tree.png)
+
 
