@@ -90,7 +90,7 @@ export const editPost = async (req, res) => {
   try {
     const result = await saveImageLocal(req, res, IMG_INFO);
     const { body: { postId, title, subTitle, postContent }, file } = req;
-    const postOne = await Post.findById(postId); // 게시글 수정 전 파일 경로, 생성일자 get
+    const postOne = await Post.findOne({ where: { id: postId } }); // 게시글 수정 전 파일 경로, 생성일자 get
     let imgUrl = postOne.fileUrl || '';
 
     if(result.status == 'ERROR') throw {data: result.data}  // 에러 처리
@@ -102,14 +102,16 @@ export const editPost = async (req, res) => {
     } else if(!imgUrl && file) {  // 게시글 사진 변경시
       imgUrl = `${result.data.savePath}/${result.data.fileName}`;
     }
-    await Post.findByIdAndUpdate(postId, {
-      title,
-      subTitle,
-      postContent,
-      //createdAt: postOne.createdAt,
-      modifiedAt: new Date(),
-      fileUrl: imgUrl
-    });
+
+    await Post.update({
+        title,
+        subTitle,
+        postContent,
+        fileUrl: imgUrl
+      }, {
+        where: { id: postId }
+      }
+    );
 
     req.flash("success", "Post updated");    // session에서 데이터 삽입
     res.redirect(`${routes.posts}`);
@@ -126,13 +128,14 @@ export const deletePost = async (req, res) => {
     params: { id }
   } = req;
   try {
-    const postOne = await Post.findById(id);
-    if (String(postOne.writerId) !== req.user.id) {
+    const postOne = await Post.findOne({ where: { id: id } });
+    if (postOne.userId != req.user.id) {
       throw {};
     } else {
-      await Post.findOneAndRemove({ _id: id });
+      await Post.destroy({
+        where: { id: id }
+      });
     }
-
     if(postOne.fileUrl) {
       console.log(`${__dirname}/../public${postOne.fileUrl}`);
       await deleteFileLocal(`${__dirname}/../public${postOne.fileUrl}`);  // 해당 게시글 삭제

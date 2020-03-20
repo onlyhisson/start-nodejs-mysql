@@ -1,14 +1,16 @@
 import passport from "passport";
+import bcrypt from 'bcrypt';
 import routes from "../routes";
-import User from "../models/user";
+import { User } from "../models";
 import { saveImageLocal, deleteFileLocal } from './../public/js/common';
 
 /* 상세 보기 페이지 이동 */
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate("videos");
+    const user = await User.findOne({ where: { id: req.user.id } });
     res.render("user/profile", { pageTitle: "User", subTitle: "Profile", user });
   } catch (error) {
+    console.log(error);
     res.redirect(routes.home);
   }
 };
@@ -17,7 +19,7 @@ export const getProfile = async (req, res) => {
 export const userDetail = async (req, res) => {
   const { params: { id } } = req;
   try {
-    const user = await User.findById(id).populate("videos");
+    const user = await User.findOne({ where: { id: id } });
     res.render("user/userDetail", { pageTitle: "User Detail", user });
   } catch (error) {
     req.flash("error", "User not found"); // session에서 데이터 삽입
@@ -43,20 +45,28 @@ export const postEditProfile = async (req, res) => {
     let imgUrl = req.user.avatarUrl;
 
     if(result.status == 'ERROR') throw {data: result.data}  // 에러 처리
-    if(file) {  // 프로필 사진 변경시
+
+    if(file && req.user.avatarUrl) {  // 프로필 사진 변경시
       const oldFile = (req.user.avatarUrl).replace(result.data.savePath, '');
       await deleteFileLocal(file.destination + oldFile)    // 이전 파일 삭제
       imgUrl = `${result.data.savePath}/${result.data.fileName}`;
+    } else if(file) {
+      imgUrl = `${result.data.savePath}/${result.data.fileName}`;
     }
-    await User.findByIdAndUpdate(req.user.id, {
-      name,
-      email,
-      avatarUrl: imgUrl
-      //avatarUrl: result.status == "SUCCESS" ? imgUrl : req.user.avatarUrl
-    });
+
+    await User.update({
+        name,
+        email,
+        avatarUrl: imgUrl
+      }, {
+        where: { id: req.user.id }
+      }
+    );
+
     req.flash("success", "Profile updated");    // session에서 데이터 삽입
     res.redirect(`${routes.users}${routes.profile}`);
   } catch (error) {
+    console.log(error);
     req.flash("error", "Can't update profile"); // session에서 데이터 삽입
     res.redirect(routes.users + routes.editProfile);
   }
@@ -79,7 +89,21 @@ export const postChangePassword = async (req, res) => {
       res.redirect(`/users/${routes.profile}`);
       return;
     }
-    await req.user.changePassword(oldPassword, newPassword);
+    const userInfo = await User.findOne( {where: { id: req.user.id } });
+    const result = await bcrypt.compare(oldPassword, userInfo.password);
+
+    if(!result) throw new Error()
+
+    const hash = await bcrypt.hash(newPassword, 12);
+
+    await User.update({
+        password: hash
+      }, {
+        where: { id: req.user.id }
+      }
+    );
+    req.user.password = hash;
+    req.flash("success", "password change was successful");  // session에서 데이터 삽입
     res.redirect(`${routes.users}${routes.profile}`);
   } catch (error) {
     req.flash("error", "Can't change password");  // session에서 데이터 삽입

@@ -42,26 +42,22 @@ export const postLogin = async (req, res, next) => {
   passport.authenticate('local', (authError, user, info) => {
 
     if(authError) { // 코드 에러 등 기타 에러 발생시
-      console.log(authError);
-      return next(authError);
-    }
-
-    if(!user) {     // 아이디/비밀번호에 해당하는 사용자 없을시
+      next(authError);
+    } else if(!user) {     // 아이디/비밀번호에 해당하는 사용자 없을시
       req.flash('error', info.message);
-      return res.redirect('/login');
+      res.redirect('/login');
+    } 
+    
+    if(user) {
+      // Passport가 req에 login 메소드를 추가한다.
+      req.login(user, (loginError) => {  // req.login는 passport.serializeUser 를 호출
+        if(loginError) 
+          next(loginError);
+        req.flash('success', 'login successful.');
+        res.redirect('/');
+      })
     }
-
-    // Passport가 req에 login 메소드를 추가한다.
-    return req.login(user, (loginError) => {  // req.login는 passport.serializeUser 를 호출
-      if(loginError) {
-        console.log(loginError);
-        return next(loginError);
-      }
-      req.flash('success', 'login successful.');
-      return res.redirect('/');
-    })
   })(req, res, next)
-  
 }
 
 // Join Page

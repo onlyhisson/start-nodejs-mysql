@@ -12,14 +12,16 @@ module.exports = (passport) => {
     }, async (email, password, done) => {
         try {
             const exUser = await User.findOne({ where: { email }});
-            if(!exUser)
+            if(!exUser) {
                 done(null, false, { message: "Can't log in. Check email and/or password" });
-
-            const result = await bcrypt.compare(password, exUser.password);
-            if (result)
-                done(null, exUser);
-            else
-                done(null, false, { message: "Can't log in. Check email and/or password" });
+            } else {
+                const result = await bcrypt.compare(password, exUser.password);
+                if (result) {
+                    done(null, exUser);
+                } else {
+                    done(null, false, { message: "Can't log in. Check email and/or password" });
+                }
+            }
         } catch (error) {
             done(error);
         }
