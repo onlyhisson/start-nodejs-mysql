@@ -1,7 +1,7 @@
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
-import routes from './../../routes';
+import routes from './../../routers';
 
 
 /* 이미지 업로드 */

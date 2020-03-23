@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import routes from "../routes";
+import routes from "../routers";
 import { 
   home,
   dashboard,

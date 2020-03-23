@@ -12,7 +12,7 @@ import passport from "passport";
 import { localsMiddleware } from './middlewares';
 import models from './models/index'
 
-import routes from "./routes";
+import routes from "./routers";
 import userRouter from "./routers/userRouter";
 import globalRouter from "./routers/globalRouter";
 import apiRouter from "./routers/apiRouter";

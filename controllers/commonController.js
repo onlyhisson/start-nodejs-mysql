@@ -1,6 +1,6 @@
 import passport from "passport";
 import bcrypt from "bcrypt";
-import routes from "../routes";
+import routes from "../routers";
 import { User }  from "../models";
 import { errorHandler } from "../public/js/common";
 
